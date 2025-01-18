@@ -11,34 +11,58 @@ param (
 Write-Output "$('-'*50)"
 Write-Output $MyInvocation.MyCommand.Source
 
-$LocationLookup = Get-Content -Path $PSScriptRoot\..\bicep\global\region.json | ConvertFrom-Json
-$Prefix = $LocationLookup.$Location.Prefix
-$BranchName = git branch --show-current ? git branch --show-current : "main"
+# Verify location and get prefix
+try {
+    $LocationLookup = Get-Content -Path $PSScriptRoot\..\bicep\global\region.json | ConvertFrom-Json
+    if (!$LocationLookup.$Location) {
+        throw "Location '$Location' not found in region.json"
+    }
+    $Prefix = $LocationLookup.$Location.Prefix
+}
+catch {
+    Write-Error "Failed to process region.json: $_"
+    return
+}
+
+# Get branch name with fallback to main
+$BranchName = git branch --show-current 2>$null
+if (!$BranchName) { $BranchName = "main" }
+
+# Create workflows directory if it doesn't exist
+$workflowsPath = "$PSScriptRoot\..\..\..\..\..\.github\workflows"
+if (!(Test-Path -Path $workflowsPath)) {
+    try {
+        New-Item -Path $workflowsPath -ItemType Directory -Force | Out-Null
+        Write-Verbose "Created workflows directory: $workflowsPath" -Verbose
+    }
+    catch {
+        Write-Error "Failed to create workflows directory: $_"
+        return
+    }
+}
 
 $filestocopy = @(
     @{
         SourcePath      = "$PSScriptRoot\..\templates\azuredeploy-OrgName.parameters.json"
-        DestinationPath = "$PSScriptRoot\..\..\..\..\..\.github\workflows\azuredeploy-${OrgName}.parameters.json"
+        DestinationPath = "$workflowsPath\azuredeploy-${OrgName}.parameters.json"
         TokenstoReplace = @(
             @{ Name = '{OrgName}'; Value = $OrgName },
             @{ Name = '{Location}'; Value = $Location },
             @{ Name = '{BranchName}'; Value = $BranchName }
         )
-    }
-
+    },
     @{
-        SourcePath      = "$PSScriptRoot\..\templates\echobot-build-OrgName.yml"
-        DestinationPath = "$PSScriptRoot\..\..\..\..\..\.github\workflows\echobot-build-${OrgName}.yml"
+        SourcePath      = "$PSScriptRoot\..\templates\PsiBot-build-OrgName.yml"
+        DestinationPath = "$workflowsPath\PsiBot-build-${OrgName}.yml"
         TokenstoReplace = @(
             @{ Name = '{OrgName}'; Value = $OrgName },
             @{ Name = '{Location}'; Value = $Location },
             @{ Name = '{BranchName}'; Value = $BranchName }
         )
-    }
-
+    },
     @{
-        SourcePath      = "$PSScriptRoot\..\templates\echobot-infra-OrgName.yml"
-        DestinationPath = "$PSScriptRoot\..\..\..\..\..\.github\workflows\echobot-infra-${OrgName}.yml"
+        SourcePath      = "$PSScriptRoot\..\templates\PsiBot-infra-OrgName.yml"
+        DestinationPath = "$workflowsPath\PsiBot-infra-${OrgName}.yml"
         TokenstoReplace = @(
             @{ Name = '{OrgName}'; Value = $OrgName },
             @{ Name = '{Location}'; Value = $Location },
@@ -47,57 +71,58 @@ $filestocopy = @(
     }
 )
 
-$filestocopy | Foreach {
-
-    if (! (Test-Path -Path $_.DestinationPath))
-    {
-        Copy-Item -Path $_.SourcePath -Destination $_.DestinationPath
-    }
-
-    $destinationPath = $_.DestinationPath
-    $_.TokenstoReplace | ForEach-Object {
-        if ($_.Name -and (Select-String -Pattern $_.Name -Path $destinationPath))
-        {
-            ((Get-Content -Path $destinationPath -Raw) -replace $_.Name,$_.Value) | Set-Content -Path $destinationPath
+foreach ($file in $filestocopy) {
+    try {
+        # Verify source file exists
+        if (!(Test-Path -Path $file.SourcePath)) {
+            Write-Error "Source file not found: $($file.SourcePath)"
+            continue
         }
+
+        # Copy file if it doesn't exist
+        if (!(Test-Path -Path $file.DestinationPath)) {
+            Copy-Item -Path $file.SourcePath -Destination $file.DestinationPath -Force
+            Write-Verbose "Copied file to: $($file.DestinationPath)" -Verbose
+        }
+
+        # Replace tokens
+        $content = Get-Content -Path $file.DestinationPath -Raw
+        foreach ($token in $file.TokenstoReplace) {
+            if ($token.Name -and $content -match [regex]::Escape($token.Name)) {
+                $content = $content -replace [regex]::Escape($token.Name), $token.Value
+            }
+        }
+        Set-Content -Path $file.DestinationPath -Value $content -Force
+    }
+    catch {
+        Write-Error "Failed processing file $($file.SourcePath): $_"
     }
 }
 
-# Stage meta data file on storage used for app releases
+# Stage meta data file on storage
 [String]$SAName = "${Prefix}${OrgName}${App}${Environment}saglobal".tolower()
-$Context = New-AzStorageContext -StorageAccountName $SAName -UseConnectedAccount
-[String]$ContainerName = 'builds'
-$StorageContainerParams = @{
-    Container = $ContainerName
-    Context   = $Context
-}
+try {
+    $Context = New-AzStorageContext -StorageAccountName $SAName -UseConnectedAccount
+    [String]$ContainerName = 'builds'
+    $StorageContainerParams = @{
+        Container = $ContainerName
+        Context   = $Context
+    }
 
-Write-Verbose -Message "Global SAName:`t`t [$SAName] Container is: [$ContainerName]" -Verbose
-if (! (Get-AzStorageContainer @StorageContainerParams -EA 0))
-{
-    try
-    {
-        # Create the storage blob Containers
+    Write-Verbose -Message "Global SAName:`t`t [$SAName] Container is: [$ContainerName]" -Verbose
+
+    # Create container if it doesn't exist
+    if (!(Get-AzStorageContainer @StorageContainerParams -EA 0)) {
         New-AzStorageContainer @StorageContainerParams -ErrorAction Stop
+        Write-Verbose "Created storage container: $ContainerName" -Verbose
     }
-    catch
-    {
-        Write-Warning $_
-        break
+
+    # Copy metadata file if it doesn't exist
+    if (!(Get-AzStorageBlob @StorageContainerParams -Blob $ComponentName/$MetaDataFileName -EA 0)) {
+        $Item = Get-Item -Path $PSScriptRoot\..\templates\$MetaDataFileName
+        Set-AzStorageBlobContent @StorageContainerParams -File $item.FullName -Blob $ComponentName/$MetaDataFileName -Force -Verbose
     }
 }
-
-if (! (Get-AzStorageBlob @StorageContainerParams -Blob $ComponentName/$MetaDataFileName -EA 0))
-{
-    try
-    {
-        # Copy up the metadata file
-        $Item = Get-Item -Path $PSScriptRoot\..\templates\$MetaDataFileName
-        Set-AzStorageBlobContent @StorageContainerParams -File $item.FullName -Blob $ComponentName/$MetaDataFileName -Verbose -Force
-    }
-    catch
-    {
-        Write-Warning $_
-        break
-    }
+catch {
+    Write-Error "Failed storage operation: $_"
 }
