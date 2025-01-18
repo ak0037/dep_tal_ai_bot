@@ -56,7 +56,9 @@ $RequiredSecrets = @(
     @{ Name = 'ServiceDNSName'; Message = 'Enter the DNS value that will point to the load balancer (ie bot.example.com)'; },
     @{ Name = 'MediaServiceFQDN'; Message = 'Enter the FQDN for the media service (ie tal.spaceinventive.com)'; },  # Add this line
     @{ Name = 'PlaceCallEndpointUrl'; Message = 'Enter the endpoint URL for placing calls via Microsoft Graph (ie https://graph.microsoft.com/v1.0)'; },
-    @{ Name = 'ServiceCname'; Message = 'Enter the CNAME for the bot service (ie tal.spaceinventive.com)'; }
+    @{ Name = 'ServiceCname'; Message = 'Enter the CNAME for the bot service (ie tal.spaceinventive.com)'; },
+    @{ Name = 'PsiStoreDirectory'; Message = 'Enter PsiStore directory (ie "")'; },
+    @{ Name = 'BotName'; Message = 'Enter the bot name thats created(ie "talliant01")'; }
 )
 
 $SpeechServicesSecrets = @(

@@ -158,6 +158,7 @@
                     State       = 'Running'
                     StartupType = 'Automatic'
                     Description = 'Psi Bot Service'
+                    Credential  = $AdminCreds
                 }
             )
 
