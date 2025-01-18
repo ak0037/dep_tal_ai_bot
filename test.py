@@ -67,7 +67,7 @@ def main():
     args = parser.parse_args()
     
     # Default ignore patterns
-    ignore_patterns = ['.git', 'node_modules', '__pycache__', '.pytest_cache','Dockerfile','docker-compose.yml','.dockerignore', '.vscode']
+    ignore_patterns = [ 'node_modules', '__pycache__', '.pytest_cache','Dockerfile','docker-compose.yml','.dockerignore', '.vscode']
     
     # Add user-provided patterns
     if args.ignore:

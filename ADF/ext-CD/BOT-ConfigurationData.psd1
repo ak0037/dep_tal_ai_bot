@@ -154,7 +154,7 @@
             NewServicePresent           = @(
                 @{
                     Name        = 'Psi Bot Service'
-                    Path        = 'C:\API\PsiBot\PsiBot.exe'
+                    Path        = 'C:\API\PsiBot\PsiBot.Service.exe'
                     State       = 'Running'
                     StartupType = 'Automatic'
                     Description = 'Psi Bot Service'
