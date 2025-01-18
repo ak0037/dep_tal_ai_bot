@@ -107,4 +107,3 @@ jobs:
           }
           & ./ADF/release-az/Update-AzBuildMetaData.ps1 @Params
         azPSVersion: latest
-

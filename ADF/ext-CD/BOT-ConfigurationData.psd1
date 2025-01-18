@@ -36,12 +36,12 @@
             # Dynamically set from Azure Metadata Service
             EnvironmentVarPresentVMSS   = @(
                 @{
-                    Name             = 'PsiBot:Service:Settings:BotConfiguration:MediaInstanceExternalPort'
+                    Name             = 'BotConfiguration:MediaInstanceExternalPort'
                     BackendPortMatch = '8445'
                     Value            = '{0}'
                 },
                 @{
-                    Name             = 'PsiBot:Service:Settings:BotConfiguration:BotInstanceExternalPort'
+                    Name             = 'BotConfiguration:BotInstanceExternalPort'
                     BackendPortMatch = '9441'
                     Value            = '{0}'
                 }
@@ -50,11 +50,11 @@
             # default environment variables
             EnvironmentVarPresent       = @(
                 @{
-                    Name  = 'PsiBot:Service:Settings:BotConfiguration:BotCallingInternalPort'
+                    Name  = 'BotConfiguration:BotCallingInternalPort'
                     Value = '9442'
                 },
                 @{
-                    Name  = 'PsiBot:Service:Settings:BotConfiguration:CallSignalingPort'
+                    Name  = 'BotConfiguration:CallSignalingPort'
                     Value = '9441'
                 },
                 @{
@@ -64,16 +64,16 @@
             )
             
             EnvironmentVarSet = @(
-                @{Prefix = 'PsiBot:Service:Settings:BotConfiguration:'; KVName = '{0}-kv'; Name = 'BotName' },
-                @{Prefix = 'PsiBot:Service:Settings:BotConfiguration:'; KVName = '{0}-kv'; Name = 'ServiceDnsName' },
-                @{Prefix = 'PsiBot:Service:Settings:BotConfiguration:'; KVName = '{0}-kv'; Name = 'ServiceCname' },
-                @{Prefix = 'PsiBot:Service:Settings:BotConfiguration:'; KVName = '{0}-kv'; Name = 'CertificateThumbprint' },
-                @{Prefix = 'PsiBot:Service:Settings:BotConfiguration:'; KVName = '{0}-kv'; Name = 'AadAppId' },
-                @{Prefix = 'PsiBot:Service:Settings:BotConfiguration:'; KVName = '{0}-kv'; Name = 'OrgName' },
-                @{Prefix = 'PsiBot:Service:Settings:BotConfiguration:'; KVName = '{0}-kv'; Name = 'AadAppSecret' },
-                @{Prefix = 'PsiBot:Service:Settings:BotConfiguration:'; KVName = '{0}-kv'; Name = 'MediaServiceFQDN' },
-                @{Prefix = 'PsiBot:Service:Settings:BotConfiguration:'; KVName = '{0}-kv'; Name = 'PsiStoreDirectory' },
-                @{Prefix = 'PsiBot:Service:Settings:BotConfiguration:'; KVName = '{0}-kv'; Name = 'PlaceCallEndpointUrl' }
+                @{Prefix = 'BotConfiguration:'; KVName = '{0}-kv'; Name = 'BotName' },
+                @{Prefix = 'BotConfiguration:'; KVName = '{0}-kv'; Name = 'ServiceDnsName' },
+                @{Prefix = 'BotConfiguration:'; KVName = '{0}-kv'; Name = 'ServiceCname' },
+                @{Prefix = 'BotConfiguration:'; KVName = '{0}-kv'; Name = 'CertificateThumbprint' },
+                @{Prefix = 'BotConfiguration:'; KVName = '{0}-kv'; Name = 'AadAppId' },
+                @{Prefix = 'BotConfiguration:'; KVName = '{0}-kv'; Name = 'OrgName' },
+                @{Prefix = 'BotConfiguration:'; KVName = '{0}-kv'; Name = 'AadAppSecret' },
+                @{Prefix = 'BotConfiguration:'; KVName = '{0}-kv'; Name = 'MediaServiceFQDN' },
+                @{Prefix = 'BotConfiguration:'; KVName = '{0}-kv'; Name = 'PsiStoreDirectory' },
+                @{Prefix = 'BotConfiguration:'; KVName = '{0}-kv'; Name = 'PlaceCallEndpointUrl' }
             )
 
             # Blob copy with Managed Identity - Oauth2
