@@ -127,7 +127,7 @@ Function global:AzDeploy
     #     Permission = 'r'
     #     ExpiryTime = (Get-Date).AddMinutes(40)
     # }
-    $queryString = "sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2024-07-07T08:06:39Z&st=2024-04-07T00:06:39Z&spr=https&sig=SenShb8PLFu1bexd3z3Pt%2FJXXHilXICeLGiUXEQ2kR8%3D"
+    $queryString = "sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupiytfx&se=2025-01-18T20:23:37Z&st=2025-01-18T12:23:37Z&spr=https&sig=0Tgixn7Wv0talz6wo8CyZ%2FHXwOi9pTWMhCzIS7Q5aew%3D"
 
     
 
