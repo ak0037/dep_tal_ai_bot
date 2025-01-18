@@ -36,12 +36,12 @@
             # Dynamically set from Azure Metadata Service
             EnvironmentVarPresentVMSS   = @(
                 @{
-                    Name             = 'BotConfiguration:MediaInstanceExternalPort'
+                    Name             = 'PsiBot:Service:Settings:BotConfiguration:MediaInstanceExternalPort'
                     BackendPortMatch = '8445'
                     Value            = '{0}'
                 },
                 @{
-                    Name             = 'BotConfiguration:BotInstanceExternalPort'
+                    Name             = 'PsiBot:Service:Settings:BotConfiguration:BotInstanceExternalPort'
                     BackendPortMatch = '9441'
                     Value            = '{0}'
                 }
@@ -50,11 +50,11 @@
             # default environment variables
             EnvironmentVarPresent       = @(
                 @{
-                    Name  = 'BotConfiguration:BotCallingInternalPort'
+                    Name  = 'PsiBot:Service:Settings:BotConfiguration:BotCallingInternalPort'
                     Value = '9442'
                 },
                 @{
-                    Name  = 'BotConfiguration:CallSignalingPort'
+                    Name  = 'PsiBot:Service:Settings:BotConfiguration:CallSignalingPort'
                     Value = '9441'
                 },
                 @{
@@ -154,7 +154,7 @@
             NewServicePresent           = @(
                 @{
                     Name        = 'Psi Bot Service'
-                    Path        = 'C:\API\PsiBot\PsiBot.Service.exe'
+                    Path        = 'C:\API\PsiBot\PsiBot.exe'
                     State       = 'Running'
                     StartupType = 'Automatic'
                     Description = 'Psi Bot Service'
