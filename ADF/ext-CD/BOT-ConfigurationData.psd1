@@ -7,7 +7,7 @@
         @{
             NodeName                    = 'LocalHost'
             PSDscAllowPlainTextPassword = $true
-            PSDscAllowDomainUser        = $true
+            PSDscAllowDomainUser        = $trueBotConfiguration:
 
             # DisksPresent                = @{DriveLetter = 'F'; DiskID = '2' }
 
@@ -36,12 +36,12 @@
             # Dynamically set from Azure Metadata Service
             EnvironmentVarPresentVMSS   = @(
                 @{
-                    Name             = 'PsiBot:Service:Settings:BotConfiguration:MediaInstanceExternalPort'
+                    Name             = 'BotConfiguration:MediaInstanceExternalPort'
                     BackendPortMatch = '8445'
                     Value            = '{0}'
                 },
                 @{
-                    Name             = 'PsiBot:Service:Settings:BotConfiguration:BotInstanceExternalPort'
+                    Name             = 'BotConfiguration:BotInstanceExternalPort'
                     BackendPortMatch = '9441'
                     Value            = '{0}'
                 }
@@ -50,11 +50,11 @@
             # default environment variables
             EnvironmentVarPresent       = @(
                 @{
-                    Name  = 'PsiBot:Service:Settings:BotConfiguration:BotCallingInternalPort'
+                    Name  = 'BotConfiguration:BotCallingInternalPort'
                     Value = '9442'
                 },
                 @{
-                    Name  = 'PsiBot:Service:Settings:BotConfiguration:CallSignalingPort'
+                    Name  = 'BotConfiguration:CallSignalingPort'
                     Value = '9441'
                 },
                 @{
