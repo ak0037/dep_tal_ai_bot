@@ -7,7 +7,7 @@
         @{
             NodeName                    = 'LocalHost'
             PSDscAllowPlainTextPassword = $true
-            PSDscAllowDomainUser        = $trueBotConfiguration:
+            PSDscAllowDomainUser        = $true
 
             # DisksPresent                = @{DriveLetter = 'F'; DiskID = '2' }
 
@@ -58,7 +58,7 @@
                     Value = '9441'
                 },
                 @{
-                    Name  = 'Psibot.ServiceBotConfiguration:InstanceInternalPort'
+                    Name  = 'BotConfiguration:InstanceInternalPort'
                     Value = '8445'
                 }
             )
